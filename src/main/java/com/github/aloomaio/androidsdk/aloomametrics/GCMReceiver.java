@@ -255,7 +255,7 @@ public class GCMReceiver extends BroadcastReceiver {
     private Notification makeNotificationSDKLessThan11(Context context, PendingIntent intent, NotificationData notificationData) {
         final Notification n = new Notification(notificationData.icon, notificationData.message, System.currentTimeMillis());
         n.flags |= Notification.FLAG_AUTO_CANCEL;
-        n.setLatestEventInfo(context, notificationData.title, notificationData.message, intent);
+        // n.setLatestEventInfo(context, notificationData.title, notificationData.message, intent);
         return n;
     }
 
