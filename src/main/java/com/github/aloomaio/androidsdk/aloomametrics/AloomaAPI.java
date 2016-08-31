@@ -254,6 +254,12 @@ public class AloomaAPI {
         }
     }
 
+    public void setEventTransformer(AloomaAPI.EventTransformer eventTransformer) {
+        if(this.mMessages != null) {
+            this.mMessages.setEventTransformer(eventTransformer);
+        }
+    }
+
     /**
      * This call is a no-op, and will be removed in future versions.
      *
@@ -1673,6 +1679,10 @@ public class AloomaAPI {
             });
         }
     }// PeopleImpl
+
+    public interface EventTransformer {
+        void transformBeforeSend(String event, JSONObject items);
+    }
 
     private interface UpdatesListener extends DecideMessages.OnNewResultsListener {
         public void addOnMixpanelUpdatesReceivedListener(OnMixpanelUpdatesReceivedListener listener);

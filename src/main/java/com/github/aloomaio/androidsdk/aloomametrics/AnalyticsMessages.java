@@ -16,6 +16,7 @@ import com.github.aloomaio.androidsdk.util.Base64Coder;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,6 +44,8 @@ import java.util.Map;
     }
 
     private String mSchema;
+
+    private AloomaAPI.EventTransformer mEventTransformer;
 
     /**
      * Do not call directly. You should call AnalyticsMessages.getInstance()
@@ -100,6 +103,10 @@ import java.util.Map;
             }
             return ret;
         }
+    }
+
+    public void setEventTransformer(AloomaAPI.EventTransformer eventTransformer) {
+        this.mEventTransformer = eventTransformer;
     }
 
     public void eventsMessage(final EventDescription eventDescription) {
@@ -404,7 +411,27 @@ import java.util.Map;
                     final String lastId = eventsData[0];
                     final String rawMessage = eventsData[1];
 
-                    final String encodedData = Base64Coder.encodeString(rawMessage);
+                    // transform event?
+                    JSONArray eventsArray = null;
+                    if(AnalyticsMessages.this.mEventTransformer != null) {
+                        try {
+                            eventsArray = new JSONArray(rawMessage);
+                            for(int index = 0; index < eventsArray.length(); ++index) {
+                                try {
+                                    JSONObject encodedData = eventsArray.getJSONObject(index);
+                                    String params = encodedData.optString("event", null);
+                                    AnalyticsMessages.this.mEventTransformer.transformBeforeSend(params, encodedData);
+                                } catch (JSONException e) {
+                                    Log.e(LOGTAG, "Failed to transform event before send.", e);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            Log.e(LOGTAG, "Failed to transform all events before send.", e);
+                        }
+                    }
+
+                    final String finalRawMessage = eventsArray == null ? rawMessage : eventsArray.toString();
+                    final String encodedData = Base64Coder.encodeString(finalRawMessage);
                     final List<NameValuePair> params = new ArrayList<NameValuePair>(1);
                     params.add(new BasicNameValuePair("data", encodedData));
                     if (AConfig.DEBUG) {
@@ -427,7 +454,7 @@ import java.util.Map;
                                     throw new RuntimeException("UTF not supported on this platform?", e);
                                 }
 
-                                logAboutMessageToAlooma("Successfully posted to " + url + ": \n" + rawMessage);
+                                logAboutMessageToAlooma("Successfully posted to " + url + ": \n" + finalRawMessage);
                                 logAboutMessageToAlooma("Response was " + parsedResponse);
                             }
                             break;
