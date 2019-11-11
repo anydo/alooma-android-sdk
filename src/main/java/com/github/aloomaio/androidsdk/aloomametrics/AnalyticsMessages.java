@@ -40,7 +40,7 @@ import java.util.Map;
         mSchema = mForceSSL? "https" : "http";
     }
 
-    private String mSchema;
+    //private String mSchema;
 
     private AloomaAPI.EventTransformer mEventTransformer;
 
