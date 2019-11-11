@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }
 
@@ -24,17 +24,19 @@ allprojects {
 }
 
 dependencies {
-    androidTestCompile project(':')
-    compile "com.google.android.gms:play-services:9.4.0"
+    compile 'com.github.aloomaio.androidsdk:androidsdk:6.0.3-SNAPSHOT'
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 21
+        targetSdkVersion 26
+
+        applicationId "com.github.alooma.androidsdk.tester"
         versionCode 1
         versionName "1.0"
     }
@@ -52,4 +54,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
+
+
+
 
