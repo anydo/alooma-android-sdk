@@ -1,26 +1,26 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
-
 buildscript {
     repositories {
         mavenCentral()
+        google()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:3.0.0'
     }
 }
-
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion '26.0.2'
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         // If you change minSdkVersion or targetSdkVersion below, you must also change
         // the relevant attributes of the <uses-sdk> tag in AndroidManifest.xml
         minSdkVersion 9
-        targetSdkVersion 21
+        targetSdkVersion 24
         multiDexEnabled true
 
         lintOptions {
@@ -29,13 +29,11 @@ android {
         }
     }
 }
-
 // Note- *all* dependencies are marked as optional in our final
 // pom! If you need a transitive dependency in the library, you'll
 // have to change the bit in uploadArchives that marks all dependencies as optional.
 dependencies {
-    compile "com.google.android.gms:play-services:9.4.0"
-
+    implementation 'com.google.android.gms:play-services-gcm:9.4.0'
 }
 
 android.libraryVariants.all { variant ->
@@ -45,24 +43,24 @@ android.libraryVariants.all { variant ->
         ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
         classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
         exclude(
-            '**/R.*',
-            '**/java_websocket/**',
-            '**/util/**',
-            '**/AlwaysSubmittableEditText.java',
-            '**/BuildConfig.java',
-            '**/CardCarouselLayout.java',
-            '**/FadeOnPressButton.java',
-            '**/FadingImageView.java',
-            '**/InAppFragment.java',
-            '**/MiniCircleImageView.java',
-            '**/SurveyActivity.java',
-            '**/SurveyChoiceView.java',
-            '**/SurveyCallbacks.java',
-            '**/TrackingDebug.java',
-            '**/Tweaks.java', // Someday this will be exposed to the public
-            '**/UpdateDisplayState.java',
-            '**/UpdatesFromMixpanel.java',
-            '**/ViewCrawler.java'
+                '**/R.*',
+                '**/java_websocket/**',
+                '**/util/**',
+                '**/AlwaysSubmittableEditText.java',
+                '**/BuildConfig.java',
+                '**/CardCarouselLayout.java',
+                '**/FadeOnPressButton.java',
+                '**/FadingImageView.java',
+                '**/InAppFragment.java',
+                '**/MiniCircleImageView.java',
+                '**/SurveyActivity.java',
+                '**/SurveyChoiceView.java',
+                '**/SurveyCallbacks.java',
+                '**/TrackingDebug.java',
+                '**/Tweaks.java', // Someday this will be exposed to the public
+                '**/UpdateDisplayState.java',
+                '**/UpdatesFromMixpanel.java',
+                '**/ViewCrawler.java'
         )
         options {
             encoding = 'UTF-8'
@@ -71,11 +69,9 @@ android.libraryVariants.all { variant ->
         }
     }
 }
-
 android.buildTypes.all { buildType ->
     buildType.buildConfigField "String", "ALOOMA_VERSION", "\"${project.properties.version}\""
 }
-
 allprojects {
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile) {
@@ -83,18 +79,15 @@ allprojects {
         }
     }
 }
-
 def isReleaseVersion() {
     return !version.endsWith("SNAPSHOT");
 }
-
 if (isReleaseVersion()) {
     signing {
         required { gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.archives
     }
 }
-
 uploadArchives {
     configuration = configurations.archives
 
@@ -151,9 +144,13 @@ uploadArchives {
                 authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
         } else {
-            repository(url:'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath)
+            repository(url: 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath)
         }
 
     }
 }
-
+repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+}
