@@ -4,13 +4,18 @@ apply plugin: 'signing'
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
 android {
-    compileSdkVersion 24
+    compileSdkVersion 26
     buildToolsVersion '25.0.3'
     useLibrary 'org.apache.http.legacy'
 
@@ -18,7 +23,7 @@ android {
         // If you change minSdkVersion or targetSdkVersion below, you must also change
         // the relevant attributes of the <uses-sdk> tag in AndroidManifest.xml
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 26
         multiDexEnabled true
 
         lintOptions {
@@ -150,4 +155,8 @@ uploadArchives {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
 }
